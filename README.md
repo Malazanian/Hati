@@ -1,0 +1,2 @@
+# Hati
+DAOC Discord Bot
