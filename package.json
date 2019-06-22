@@ -1,0 +1,24 @@
+{
+  "name": "Hati",
+  "version": "1.0.0",
+  "description": "DAOC Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Malazanian/Hati.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Malazanian/Hati/issues"
+  },
+  "homepage": "https://github.com/Malazanian/Hati#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.0.0"
+  }
+}
