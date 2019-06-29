@@ -6,6 +6,7 @@ module.exports = {
 	usage: `group <#> \nexample: !group 1`,
 	execute(message, args) {
 		const builds = buildList.builds;
+		let groupStatus = buildnumber => builds[buildnumber].hasOwnProperty('group') ? Object.keys(builds[buildnumber].group).length : 0;
 
 		if (!builds[args[0]]) {
 			return message.channel.send(`\`\`\`diff\n-Build ${args[0]} does not exist yet.\`\`\``)
@@ -19,7 +20,7 @@ module.exports = {
 				group.push(`#${member} - ${info}\n`)
 			}
 			group = group.join('')
-			return message.channel.send(`\`\`\`md\n#Group ${args[0]}:\n${group}\`\`\``);
+			return message.channel.send(`\`\`\`md\n#Group ${args[0]}: - ${groupStatus(args[0])}/8\n${group}\`\`\``);
 		}
 	},
 };

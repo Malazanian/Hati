@@ -11,8 +11,13 @@ module.exports = {
 			let buildData = JSON.stringify(args.slice(1).join(' '))
 			fs.readFile('builds.json', 'utf8', (err, data) => {
 				if (err) { throw err }
+
 				obj = JSON.parse(data)
-				obj.builds[args[0]]["build"] = buildData
+				if (!obj.builds[args[0]]) {
+					obj.builds[args[0]] = {"build": {}}
+				}
+
+				obj.builds[args[0]].build = buildData
 				json = JSON.stringify(obj)
 				fs.writeFile('builds.json', json, 'utf8', err => { if (err) throw err })
 				// This is fine for now. Maybe pass the buildData from the file after it has finished writing if there are issues with data retrieval for other users in a short window of time

@@ -6,7 +6,8 @@ module.exports = {
 	execute(message) {
         const data = [];
         const builds = buildList.builds;
-        const displayBuildsText = Object.keys(builds).map(buildNumber => `#${buildNumber} - ${builds[buildNumber].build}\n`).join('')
+        let groupStatus = buildnumber => builds[buildnumber].hasOwnProperty('group') ? Object.keys(builds[buildnumber].group).length : 0;
+        let displayBuildsText = Object.keys(builds).map(buildNumber => `#${buildNumber} - ${groupStatus(buildNumber)}/8 - ${builds[buildNumber].build}\n`).join('')
 
         if (Object.entries(builds).length === 0 && builds.constructor === Object) {
             return message.channel.send(`\`\`\`diff\n-There are no builds added yet! \n-Use !setbuild to add a build to the list.\`\`\``)

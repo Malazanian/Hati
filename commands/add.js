@@ -21,7 +21,6 @@ module.exports = {
 
                     if (obj.builds[args[0]].group) {
                         obj.builds[args[0]].group[args[1]] = args.length < 3 ? args[1] : args.slice(2).join(' ')
-                        console.log(obj.builds[args[0]])
                         json = JSON.stringify(obj)
                         fs.writeFile('builds.json', json, 'utf8', err => { if (err) throw err })
                         // This is fine for now. Maybe pass the buildData from the file after it has finished writing if there are issues with data retrieval for other users in a short window of time
