@@ -1,11 +1,22 @@
 const fs = require('fs');
 const { prefix } = require('../config.json');
+const mongo = require('../mongodb/connection')
 module.exports = {
 	name: 'setbuild',
 	args: true,
     description: 'sets the info for classes and build time for the specified group.',
     usage: `setbuild <build #> <build info> \nexample: !setbuild 1 Healer Healer Shaman Skald DPS DPS DPS DPS 9PM EST`,
 	execute(message, args) {
+
+		const setBuild = async buildNumber => {
+			try {
+				let newBuildData = JSON.stringify(args.slice(1).join(' '))
+				return await mongo.getDB().collection('builds').insertOne({ _id: `${args[0]}`, "build" : newBuildData })
+			} catch (err) {
+				console.log(err)
+			}
+		}
+		setBuild(args[0])
 
 		if (parseInt(args[0]) > 0 && parseInt(args[0]).toString() === args[0]) {
 			let buildData = JSON.stringify(args.slice(1).join(' '))

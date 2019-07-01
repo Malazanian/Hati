@@ -1,4 +1,5 @@
 const buildList = require('../builds.json');
+const { groupsize } = require('../config.json')
 module.exports = {
 	name: 'group',
 	args: true,
@@ -20,7 +21,7 @@ module.exports = {
 				group.push(`#${member} - ${info}\n`)
 			}
 			group = group.join('')
-			return message.channel.send(`\`\`\`md\n#Group ${args[0]}: - ${groupStatus(args[0])}/8\n${group}\`\`\``);
+			return message.channel.send(`\`\`\`md\n#Group ${args[0]}: - ${groupStatus(args[0])}/${groupsize}\n${group}\`\`\``);
 		}
 	},
 };
