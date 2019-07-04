@@ -12,10 +12,7 @@ module.exports = {
 		const setBuild = async (buildNumber, buildData) => {
 			try {
 				const build = new Build({ build: buildData })
-				return await Build.findOneAndUpdate({ _id: buildNumber }, build, { upsert: true, new: true }, (err, res) => {
-					if (err) console.error(err)
-					return res
-				})
+				return await Build.findOneAndUpdate({ _id: buildNumber }, build, { upsert: true, new: true })
 			} catch (err) {
 				return err
 			}

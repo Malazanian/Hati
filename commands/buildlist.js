@@ -10,10 +10,8 @@ module.exports = {
 
         const getAllBuilds = async () => {
 			try {
-				return await Build.aggregate([{ "$sort": { _id: 1 } }], (err, res) => {
-                    if (err) console.error(err)
-                    return message.channel.send(`${Build.buildlistSuccess(res)}`)
-				})
+				let buildListArray = await Build.aggregate([{ "$sort": { _id: 1 } }])
+                return message.channel.send(`${Build.buildlistSuccess(buildListArray)}`)
 			} catch (err) {
 				return err
 			}
