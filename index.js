@@ -2,31 +2,28 @@ require('dotenv').config()
 const fs = require('fs');
 const Discord = require('discord.js');
 const token = process.env.HATI_TOKEN
-const { prefix } = require('./config.json');
-const mongo = require('./mongodb/connection')
+const { maintenance, prefix } = require('./config.json');
+const mongoose = require('mongoose');
 
-mongo.connectToServer(err => {
-	if (err) console.error(err)
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true , useFindAndModify: false })
+const db = mongoose.connection;
 
-	const collection = mongo.getDB().collection('builds')
-	collection.find().toArray((err, items) => console.log(items))
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
 
 	const client = new Discord.Client();
 	client.commands = new Discord.Collection();
-
+	
 	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
+	
 	for (const file of commandFiles) {
 		const command = require(`./commands/${file}`);
 		client.commands.set(command.name, command);
 	}
-
+	
 	const cooldowns = new Discord.Collection();
-
-	client.once('ready', () => {
-		console.log('Ready!');
-	});
-
+	
+	client.once('ready', () => console.log('Ready!'));
 	client.on('message', message => {
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -35,6 +32,10 @@ mongo.connectToServer(err => {
 		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 		if (!command) return;
+
+		if (command && maintenance) {
+			return message.channel.send(`\`\`\`fix\nI'm off playing with Sköll! I will be home later.\`\`\``)
+		}
 
 		if (command.args && !args.length) {
 			let reply = `You didn't provide any arguments, ${message.author}!`;
@@ -75,6 +76,5 @@ mongo.connectToServer(err => {
 	});
 
 	client.login(token);
-})
-
+});
 
