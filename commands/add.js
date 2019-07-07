@@ -13,12 +13,19 @@ module.exports = {
         const add = async (args) => {
 			try {
                 const buildNumber = parseInt(args[0])
-                const playerName = JSON.stringify(args[1])
+                const playerName = JSON.stringify(args[1]).toLowerCase()
                 const classInfo = JSON.stringify(args.slice(2).join(' '))
                 const group = { name: playerName, class: classInfo }
                 
-                let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber, 'group.name': { $ne: group.name } }, { $push: { group } }, { upsert: true, new: true })
-                console.log('NewPlayer: ', newPlayer)
+                let selectedBuild = await Build.findOne({ _id: buildNumber, 'group.name': group.name })
+                if (selectedBuild !== null) {
+                    let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber, 'group.name': group.name }, group, { new: true })
+                    console.log('UpdatedPlayer: ', newPlayer)
+                } else {
+                    let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber }, { $push: { group: group } }, { upsert: true, new: true })
+                    console.log('NewPlayer: ', newPlayer)
+                }
+                
                 return message.channel.send(`${Build.addSuccess(message, playerName, classInfo, buildNumber)}`)
 			} catch (err) {
 				return err
