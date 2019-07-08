@@ -15,6 +15,8 @@ module.exports = {
                 const buildNumber = parseInt(args[0])
                 const playerName = JSON.stringify(args[1]).toLowerCase()
                 const classInfo = JSON.stringify(args.slice(2).join(' '))
+                const username = message.author.username
+                const tag = message.member.user.tag
                 const group = { name: playerName, class: classInfo }
                 
                 let selectedBuild = await Build.findOne({ _id: buildNumber, 'group.name': group.name })
