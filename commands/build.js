@@ -1,21 +1,31 @@
-const buildList = require('../builds.json');
-const { prefix } = require('../config.json');
+const Build = require('../mongodb/model').Build;
+
 module.exports = {
 	name: 'build',
 	args: true,
 	description: 'displays the info for classes and build time for the specified group.',
 	usage: `build <#> \nexample: !build 1`,
 	execute(message, args) {
-		const builds = buildList.builds;
 
-		if (!parseInt(args[0]) > 0 || parseInt(args[0]).toString() !== args[0]) {
-			return message.channel.send(`\`\`\`diff\n-${args[0]} is not a valid build number. \n-Please enter a build in the following format: ${prefix}${this.usage}\`\`\``)
+		const build = async (args, message) => {
+			try {
+				if (parseInt(args[0]) < 0 || parseInt(args[0]).toString() !== args[0]) {
+					return message.channel.send(`${Build.invalidBuild(args, this.usage)}`)
+				}
+	
+				const buildNumber = parseInt(args[0])
+				const getBuild = await Build.findOne({ _id: buildNumber })
+	
+				if (!getBuild) {
+					return message.channel.send(`${Build.buildNotExist(buildNumber)}`)
+				}
+	
+				return message.channel.send(`${Build.buildSuccess(getBuild)}`)
+			} catch (err) {
+				console.log(err)
+			}
 		}
 
-		if (parseInt(args[0]) > 0 && builds[args[0]]) {
-			return message.channel.send(`\`\`\`md\n#Build ${args[0]} - ${builds[args[0]].build}\`\`\``)
-		} else {
-			return message.channel.send(`\`\`\`diff\n-Build ${args[0]} does not exist yet.\`\`\``);
-		}
+		build(args, message)
 	}
 };

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"builds":{"1":{"build":"\"Wednesday 9:30PM EST RVR\"","group":{"Onos":"War (10PM EST)","Riff":"Sham","Brend":"dps (10:15 est)","healer":"healer","savage":"savage","zenai":"zenai"}},"2":{"build":"\"Pug me please - Add name and times you can fill\""},"3":{"build":"\"im a third build\"","group":{"Onos":"War"}}}}
+=======
+{"builds":{"1":{"build":"\"Wednesday 9:30PM EST RVR\"","group":{"Onos":"War (10PM EST)","Riff":"Sham","Brend":"dps (10:15 est)","healer":"healer","savage":"savage","zenai":"zenai"}},"2":{"build":"\"Pug me please - Add name and times you can fill\""},"3":{"build":"\"im a third build\"","group":{"Onos":"War"}}}}
+>>>>>>> mongo

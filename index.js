@@ -2,69 +2,79 @@ require('dotenv').config()
 const fs = require('fs');
 const Discord = require('discord.js');
 const token = process.env.HATI_TOKEN
-const { prefix } = require('./config.json');
+const { maintenance, prefix } = require('./config.json');
+const mongoose = require('mongoose');
 
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true , useFindAndModify: false })
+const db = mongoose.connection;
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
 
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.name, command);
-}
+	const client = new Discord.Client();
+	client.commands = new Discord.Collection();
+	
+	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+	
+	for (const file of commandFiles) {
+		const command = require(`./commands/${file}`);
+		client.commands.set(command.name, command);
+	}
+	
+	const cooldowns = new Discord.Collection();
+	
+	client.once('ready', () => console.log('Ready!'));
+	client.on('message', message => {
+		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-const cooldowns = new Discord.Collection();
+		const args = message.content.slice(prefix.length).split(/ +/);
+		const commandName = args.shift().toLowerCase();
+		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-client.once('ready', () => {
-	console.log('Ready!');
-});
+		if (!command) return;
 
-client.on('message', message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
-
-	const args = message.content.slice(prefix.length).split(/ +/);
-    const commandName = args.shift().toLowerCase();
-    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
-    if (!command) return;
-
-    if (command.args && !args.length) {
-		let reply = `You didn't provide any arguments, ${message.author}!`;
-
-		if (command.usage) {
-			reply += `\nThe proper usage would be: \`${prefix}${command.usage}\``;
+		if (command && maintenance) {
+			return message.channel.send(`\`\`\`fix\nI'm off playing with Sköll! I will be home later.\`\`\``)
 		}
 
-		return message.channel.send(reply);
-    }
-    
-    if (!cooldowns.has(command.name)) {
-		cooldowns.set(command.name, new Discord.Collection());
-	}
+		if (command.args && !args.length) {
+			let reply = `You didn't provide any arguments, ${message.author}!`;
 
-	const now = Date.now();
-	const timestamps = cooldowns.get(command.name);
-	const cooldownAmount = (command.cooldown || 3) * 1000;
+			if (command.usage) {
+				reply += `\nThe proper usage would be: \`${prefix}${command.usage}\``;
+			}
 
-	if (timestamps.has(message.author.id)) {
-		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
-		if (now < expirationTime) {
-			const timeLeft = (expirationTime - now) / 1000;
-			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+			return message.channel.send(reply);
 		}
-	}
+		
+		if (!cooldowns.has(command.name)) {
+			cooldowns.set(command.name, new Discord.Collection());
+		}
 
-	timestamps.set(message.author.id, now);
-	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+		const now = Date.now();
+		const timestamps = cooldowns.get(command.name);
+		const cooldownAmount = (command.cooldown || 3) * 1000;
 
-    try {
-        command.execute(message, args);
-    } catch (error) {
-        console.error(error);
-        message.reply('there was an error trying to execute that command!');
-    }
+		if (timestamps.has(message.author.id)) {
+			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+			if (now < expirationTime) {
+				const timeLeft = (expirationTime - now) / 1000;
+				return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+			}
+		}
+
+		timestamps.set(message.author.id, now);
+		setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+		try {
+			command.execute(message, args);
+		} catch (error) {
+			console.error(error);
+			message.reply('there was an error trying to execute that command!');
+		}
+	});
+
+	client.login(token);
 });
 
-client.login(token);

@@ -1,26 +1,42 @@
-const buildList = require('../builds.json');
+const Build = require('../mongodb/model').Build;
+
 module.exports = {
 	name: 'group',
 	args: true,
 	description: 'displays the current specified participants for the specified group.',
 	usage: `group <#> \nexample: !group 1`,
 	execute(message, args) {
-		const builds = buildList.builds;
-		let groupStatus = buildnumber => builds[buildnumber].hasOwnProperty('group') ? Object.keys(builds[buildnumber].group).length : 0;
 
-		if (!builds[args[0]]) {
-			return message.channel.send(`\`\`\`diff\n-Build ${args[0]} does not exist yet.\`\`\``)
-		}
-
-		if (builds[args[0]].build && !builds[args[0]].group) {
-			return message.channel.send(`\`\`\`diff\n-There is nobody in group ${args[0]} yet!\`\`\``)
-		} else {
-			let group = []
-			for (const [member, info] of Object.entries(builds[args[0]].group)) {
-				group.push(`#${member} - ${info}\n`)
+		const group = async (args, message) => {
+			try {
+				if (parseInt(args[0]) < 0 || parseInt(args[0]).toString() !== args[0]) {
+					return message.channel.send(`${Build.invalidBuild(args, this.usage)}`)
+				}
+	
+				const buildNumber = parseInt(args[0])
+				const getBuild = await Build.findOne({ _id: buildNumber })
+	
+				if (!getBuild) {
+					return message.channel.send(`${Build.buildNotExist(buildNumber)}`)
+				}
+	
+				if (getBuild.group.length === 0) {
+					return message.channel.send(`${Build.groupEmpty(buildNumber)}`)
+				}
+	
+				let group = []
+				getBuild.group.map(member => {
+					let name = member.name.replace(/"/g,"")
+					name = name.charAt(0).toUpperCase() + name.slice(1)
+					group.push(`#${name} - ${member.class.replace(/"/g,"")}\n`)
+				})
+				group = group.join('')
+				return message.channel.send(`${Build.groupSuccess(getBuild, group)}`)
+			} catch (err) {
+				console.log(err)
 			}
-			group = group.join('')
-			return message.channel.send(`\`\`\`md\n#Group ${args[0]}: - ${groupStatus(args[0])}/8\n${group}\`\`\``);
 		}
+
+		group(args, message)
 	},
 };
