@@ -1,5 +1,3 @@
-const buildList = require('../builds.json');
-const { groupsize } = require('../config.json')
 const Build = require('../mongodb/model').Build;
 
 module.exports = {

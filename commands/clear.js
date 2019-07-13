@@ -1,34 +1,36 @@
-const fs = require('fs');
-const { prefix } = require('../config.json');
-const buildList = require('../builds.json');
+const Build = require('../mongodb/model').Build;
+
 module.exports = {
 	name: 'clear',
 	args: true,
     description: 'clears the specified group.',
     usage: `clear <#>\nexample: !clear 1`,
 	execute(message, args) {
-        const builds = buildList.builds
 
-		if (parseInt(args[0]) > 0) {
-			fs.readFile('builds.json', 'utf8', (err, data) => {
-                if (err) { throw err }
-                if (builds[args[0]]) {
-                    obj = JSON.parse(data)
-                    if (!obj.builds[args[0]].group) {
-                        return message.channel.send(`\`\`\`diff\n-Group ${args[0]} does not exist yet!\`\`\``)
-                    } else {
-                        delete obj.builds[args[0]].group
-                        json = JSON.stringify(obj)
-                        fs.writeFile('builds.json', json, 'utf8', err => { if (err) throw err })
-                        // This is fine for now. Maybe pass the buildData from the file after it has finished writing if there are issues with data retrieval for other users in a short window of time
-                        return message.channel.send(`\`\`\`md\n#${message.author.username} has cleared group ${args[0]}\`\`\``)
-                    }
-                } else {
-                    return message.channel.send(`\`\`\`diff\n-Build ${args[0]} does not exist yet!\`\`\``)
+        const clear = async (args, message) => {
+			try {
+                if (parseInt(args[0]) < 0 || parseInt(args[0]).toString() !== args[0]) {
+                    return message.channel.send(`${Build.invalidBuild(args, this.usage)}`)
                 }
-			})
-		} else {
-			return message.channel.send(`Please enter a build in the following format: \`\n${prefix}${this.usage}\``)
+                
+                const buildNumber = parseInt(args[0]);
+                const getBuild = await Build.findOne({ _id: buildNumber })
+
+                if (!getBuild) {
+                    return message.channel.send(`${Build.buildNotExist(buildNumber)}`)
+                }
+
+                if (getBuild.group.length === 0) {
+                    return message.channel.send(`${Build.groupEmpty(buildNumber)}`)
+                }
+
+                await Build.findByIdAndUpdate({ _id: buildNumber }, { $set: { size: 0 }, $unset: { group: null } })
+                return message.channel.send(`${Build.clearSuccess(message, buildNumber)}`)
+			} catch (err) {
+				console.log(err)
+			}
 		}
+
+        clear(args, message)
 	},
 };
