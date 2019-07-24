@@ -4,8 +4,16 @@ const Discord = require('discord.js');
 const token = process.env.HATI_TOKEN
 const { maintenance, prefix } = require('./config.json');
 const mongoose = require('mongoose');
+const options = {
+	useNewUrlParser: true,
+	useFindAndModify: false,
+	reconnectTries: Number.MAX_VALUE,
+	connectTimeoutMS: 30000,
+	keepAlive: true,
+	keepAliveInitialDelay: 300000
+}
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true , useFindAndModify: false })
+mongoose.connect(process.env.MONGODB_URI, options)
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
