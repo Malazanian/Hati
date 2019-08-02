@@ -23,7 +23,7 @@ BuildSchema.methods.setBuildSuccess = function () {
 }
 
 BuildSchema.statics.groupSuccess = function (build, group) {
-    return (`\`\`\`md\n(Created At: ${moment.tz(build.date, 'America/New_York').format('YYYY-MM-DD hh:mm:ss A')} EST)\n#Group ${build._id}: - ${build.size}/${groupsize}\n${group}\`\`\``)
+    return (`\`\`\`md\n(Created At: ${moment.tz(build.date, 'America/New_York').format('YYYY-MM-DD hh:mm:ss A')} EST)\n#Build ${build._id} Info: ${build.build}\n#Group ${build._id}: - ${build.size}/${groupsize}\n${group}\`\`\``)
 }
 
 BuildSchema.statics.clearSuccess = function (message, buildNumber) {
