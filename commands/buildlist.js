@@ -11,7 +11,7 @@ module.exports = {
 				let buildListArray = await Build.aggregate([{ "$sort": { _id: 1 } }])
                 return message.channel.send(`${Build.buildlistSuccess(buildListArray)}`)
 			} catch (err) {
-				return err
+				console.log(err)
 			}
         }
 
