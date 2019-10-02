@@ -63,7 +63,7 @@ BuildSchema.statics.buildSuccess = function (build) {
 }
 
 BuildSchema.statics.buildlistSuccess = function (buildsArray) {
-    return (`\`\`\`md\n#Here is a list of the current builds: \n${buildsArray.map(build => `#${build._id} - ${build.group.length}/${groupsize} - ${build.build}\n`).join('')}\`\`\``)
+    return (`\`\`\`md\n#Here is a list of the current builds: \n${buildsArray.map(build => `#${build._id} - ${build.group ? build.group.length : 0}/${groupsize} - ${build.build}\n`).join('')}\`\`\``)
 }
 
 BuildSchema.statics.buildNotExist = function (buildNumber) {
