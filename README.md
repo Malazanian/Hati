@@ -1,5 +1,5 @@
 # Hati - A DAOC Discord Bot for RVR/Raid planning
-Hati is a discord chat bot built with Node.js/MongoDB and hosted on Heroku.
+Hati is a Discord chat bot built with Node.js/MongoDB and hosted on Heroku.
 
 ## Description:
 Hati can help RVR/Raid planning with a variety of commands:
