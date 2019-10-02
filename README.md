@@ -7,7 +7,7 @@ Hati is a discord chat bot built with Node.js/MongoDB and hosted on Heroku.
 Hati can help RVR/Raid planning with a variety of commands:
 
 1. !hatihelp - Displays this list of available commands.
-![!hatihelp](assets/images/hatihelp.png)
+![!hatihelp](./assets/images/hatihelp.png)
 
 2. !setbuild - Sets the info for classes and build time for the specified group.
 ![!setbuild](assets/images/setbuild.png)
