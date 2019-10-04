@@ -32,7 +32,7 @@ module.exports = {
                     if (getBuild !== null) {
                         let selectedBuild = await Build.findOne({ _id: buildNumber, 'group.name': group.name })
                         if (selectedBuild !== null) {
-                            let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber, 'group.name': group.name }, group, { new: true })
+                            let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber}, { $set: { 'group.$[elem].class': group.class } }, { new: true, arrayFilters: [{ 'elem.name': group.name }] })
                             console.log('UpdatedPlayer: ', newPlayer)
                         } else {
                             let newPlayer = await Build.findOneAndUpdate({ _id: buildNumber }, { $inc: { size: 1 }, $push: { group: group } }, { upsert: true, new: true })

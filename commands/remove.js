@@ -16,7 +16,6 @@ module.exports = {
                 const buildNumber = parseInt(args[0])
                 const playerName = JSON.stringify(args[1]).toLowerCase()
                 const getBuild = await Build.findOne({ _id: buildNumber })
-                console.log('GetBuild: ', getBuild)
     
                 if (!getBuild) {
                     return message.channel.send(`${Build.buildNotExist(buildNumber)}`)
