@@ -38,7 +38,7 @@ db.once('open', () => {
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 		if (message.content.startsWith(prefix + "eval")) {
-			if(message.author.id !== config.ownerID) return;
+			if(message.author.id !== process.env.ownerID) return;
 			try {
 				const code = args.join(" ");
 				let evaled = eval(code);
