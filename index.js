@@ -1,7 +1,9 @@
 require('dotenv').config()
+const clean = require('./clean');
 const fs = require('fs');
 const Discord = require('discord.js');
 const token = process.env.HATI_TOKEN
+const ownerID = process.env.OWNER_ID
 const { maintenance, prefix } = require('./config.json');
 const mongoose = require('mongoose');
 const options = {
@@ -30,10 +32,25 @@ db.once('open', () => {
 	}
 	
 	const cooldowns = new Discord.Collection();
-	
+
 	client.once('ready', () => console.log('Ready!'));
 	client.on('message', message => {
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+		if (message.content.startsWith(prefix + "eval")) {
+			if(message.author.id !== config.ownerID) return;
+			try {
+				const code = args.join(" ");
+				let evaled = eval(code);
+		 
+			if (typeof evaled !== "string")
+				evaled = require("util").inspect(evaled);
+		 
+				message.channel.send(clean(evaled), {code:"xl"});
+			} catch (err) {
+				message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+			}
+		}
 
 		const args = message.content.slice(prefix.length).split(/ +/);
 		const commandName = args.shift().toLowerCase();
@@ -41,10 +58,12 @@ db.once('open', () => {
 
 		if (!command) return;
 
+		// Maintenace Flag Enabled
 		if (command && maintenance) {
 			return message.channel.send(`\`\`\`fix\nI'm off playing with Sköll! I will be home later.\`\`\``)
 		}
 
+		// No Arguments Provided
 		if (command.args && !args.length) {
 			let reply = `You didn't provide any arguments, ${message.author}!`;
 
