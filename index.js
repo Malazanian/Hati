@@ -1,5 +1,5 @@
 require('dotenv').config()
-const clean = require('./clean');
+const { clean } = require('./clean');
 const fs = require('fs');
 const Discord = require('discord.js');
 const token = process.env.HATI_TOKEN
@@ -37,8 +37,12 @@ db.once('open', () => {
 	client.on('message', message => {
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
+		const args = message.content.slice(prefix.length).split(/ +/);
+		const commandName = args.shift().toLowerCase();
+		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
 		if (message.content.startsWith(prefix + "eval")) {
-			if(message.author.id !== process.env.ownerID) return;
+			if(message.author.id !== ownerID) return;
 			try {
 				const code = args.join(" ");
 				let evaled = eval(code);
@@ -51,10 +55,6 @@ db.once('open', () => {
 				message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
 			}
 		}
-
-		const args = message.content.slice(prefix.length).split(/ +/);
-		const commandName = args.shift().toLowerCase();
-		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 		if (!command) return;
 
