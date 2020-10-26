@@ -15,7 +15,7 @@ const options = {
   keepAliveInitialDelay: 300000,
 };
 
-mongoose.connect(process.env.MONGODB_URI, options);
+mongoose.connect(process.env.DB_URI, options);
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
