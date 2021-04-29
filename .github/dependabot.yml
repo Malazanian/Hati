@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "11:00"
+  open-pull-requests-limit: 10
+  target-branch: dev
+  ignore:
+  - dependency-name: discord.js
+    versions:
+    - 12.5.1
+    - 12.5.2
+  - dependency-name: mongodb
+    versions:
+    - 3.6.3
+    - 3.6.4
+    - 3.6.5
+  - dependency-name: moment-timezone
+    versions:
+    - 0.5.32
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
